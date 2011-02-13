@@ -18,78 +18,85 @@ int main( int argc, char* argv[] ) {
 
 	WINDOW *global_win;
 	WINDOW *chat_win;
+  WINDOW *chat_sub;
 	WINDOW *text_win;
+  WINDOW *text_sub;
 	WINDOW *user_win;
 	int startx, starty, width, height;
 	int ch;
-
-  char input_queue[20][2048];
-  for( int i = 0; i < 20; i++ )
-    for( int j = 0; j < 20; j++ )
-      input_queue[i][j] = ' ';
 
 	initscr();
 	cbreak();
   noecho();
 
-	keypad( stdscr, TRUE );
-
 	refresh();
+	keypad( stdscr, TRUE );
 
 	// Window declarations
 	global_win	= create_newwin( 50, 150, 0, 0 );
 	chat_win		= create_newwin( 45, 120, 1, 1 );
 	text_win		= create_newwin( 3, 120, 46, 1 );
+//  text_sub    = subwin( text_win, 1, 119, 1, 1 );
 	user_win		= create_newwin( 48, 26, 1, 122 );
 
-	char chat_text[39][120];
-  char text_text[9][120];
+  char text[120];
+  char queue[120];
+  for( int t = 0; t < 120; t++ ) {
+    text[t] = ' '; queue[t] = ' '; }
 
-  /*for( int i = 0; *username[i] != '\0'; i++ ) {
-    mvwaddch(user_win, 1, i, *username[i]);
-  }
-  wrefresh(user_win);*/
+  chat_win = newwin(100,100,0,0);
+  chat_sub = subwin( chat_win, 10, 20, 10, 10 ); 
+  scrollok( chat_sub, 1 );
+  touchwin(chat_win);
+  refresh();
+  sleep(1);
 
-  int x = 1;
-  int y = 1;
+  int ptr = 1; wmove(text_sub, 1, ptr);
 	while((ch = getch()) != KEY_F(1)) { // DO NOTHING
     if( ch != KEY_BACKSPACE && ch != 10 ) {
       /*
          grab user input, key by key, and add it to
-         text_text[][]. print char (advancing cursor)
+         text[][]. print char (advancing cursor)
          refresh, increment pointer (y)
        */
-      text_text[x][y] = ch;
-      mvwaddch(text_win, x, y, text_text[x][y]);
-      wrefresh(text_win);
-      y += 1;
+      text[ptr] = ch;
+      mvwaddch(text_sub, 2, ptr, text[ptr]);
+      wrefresh(text_sub);
+      ptr += 1;
     } else if( ch == KEY_BACKSPACE ) {
       /*
          backspace key handler
        */
-      if( y != 1 ) {
-        y -= 1; 
-        text_text[x][y] = ' ';
-        mvwaddch(text_win, x, y, text_text[x][y]);
-        wmove(text_win, x, y);
-        wrefresh(text_win);
+      if( ptr != 1 ) {
+        ptr -= 1; 
+        text[ptr] = ' ';
+        mvwaddch(text_sub, 0, ptr, text[ptr]);
+        wmove(text_sub, 0, ptr);
+        wrefresh(text_sub);
       }
     } else if( ch == 10 ) {
       /*
          push data to queue to be processed
-          grab all characters out of text_text and
-          push them into the queue, empty text_text
+          grab all characters out of text and
+          push them into the queue, empty text
       */ 
-      /*for( int i = 0; i < text_win_x; i++ )
-        for( int j = 0; j < text_win_y; j++ )
-          mvwdelch(text_win, i, j);*/
-      werase(text_win);
-      box(text_win, 0, 0);
-      wmove(text_win, 1, 1);
-      x = 1; y = 1;
-      wrefresh(text_win);
+      for( int i = 0; i < ptr; i++ )
+        queue[i] = text[i];
+
+      // clear window, redraw border, move the cursor, reset ptr pos, refresh
+      werase(text_sub);
+      wmove(text_sub, 0, 0);
+      ptr = 1;
+      wrefresh(text_sub);
+  
+      wmove(chat_sub, 10, 10);
+      scroll(chat_sub);
+      wprintw(chat_sub, "%s", queue);
+      refresh();
     }
 	}
+  delwin(chat_sub);
+  delwin(text_sub);
 
 	endwin();
 	return 0;
