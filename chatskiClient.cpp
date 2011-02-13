@@ -26,11 +26,38 @@ int main( int argc, char* argv[] ) {
 	text_win		= create_newwin( 9, 120, 40, 1 );
 	user_win		= create_newwin( 48, 26, 1, 122 );
 
+	char chat_text[39][120];
+	for( int i = 0; i < 39; i++ )
+		for( int j = 0; j < 120; j++ )
+			chat_text[i][j] = 'a';
+
+  char mesg[] = "just a string";
+
+  for( int i = 5; i < 30; i++ )
+    for( int j = 5; j < 30; j++ )
+      mvwaddch(chat_win,i,j,chat_text[i][j]);
+  wrefresh(chat_win);
+//  refresh();
+
+/*	const char *x = "blah blah blah";
+
+	for( int i = 0; i < 14; i++ ) {
+		chat_text[0][i] = x[i];
+	}
+
+	for( int i = 0; i < 14; i++ ) {
+		mvwaddch( chat_win, 0, i, chat_text[0][i] );
+	}
+*/
+//	mvwaddch(chat_win, 2, 2, "blah blah blah");
+	//printw("blah blah blah");
+	//move(2,123);
+	//printw("droops");
+//	refresh();
+
 	while((ch = getch()) != KEY_F(1)) { // DO NOTHING
 		
 	}
-
-	printw("blah blah blah");
 
 	endwin();
 	return 0;
