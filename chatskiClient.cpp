@@ -23,6 +23,11 @@ int main( int argc, char* argv[] ) {
 	int startx, starty, width, height;
 	int ch;
 
+  char input_queue[20][2048];
+  for( int i = 0; i < 20; i++ )
+    for( int j = 0; j < 20; j++ )
+      input_queue[i][j] = ' ';
+
 	initscr();
 	cbreak();
   noecho();
@@ -33,22 +38,12 @@ int main( int argc, char* argv[] ) {
 
 	// Window declarations
 	global_win	= create_newwin( 50, 150, 0, 0 );
-	chat_win		= create_newwin( 39, 120, 1, 1 );
-	text_win		= create_newwin( 9, 120, 40, 1 );
+	chat_win		= create_newwin( 45, 120, 1, 1 );
+	text_win		= create_newwin( 3, 120, 46, 1 );
 	user_win		= create_newwin( 48, 26, 1, 122 );
 
 	char chat_text[39][120];
   char text_text[9][120];
-	for( int i = 0; i < 39; i++ )
-		for( int j = 0; j < 120; j++ )
-			chat_text[i][j] = 'a';
-
-  char mesg[] = "just a string";
-
-  for( int i = 5; i < 30; i++ )
-    for( int j = 5; j < 30; j++ )
-      mvwaddch(chat_win,i,j,chat_text[i][j]);
-  wrefresh(chat_win);
 
   /*for( int i = 0; *username[i] != '\0'; i++ ) {
     mvwaddch(user_win, 1, i, *username[i]);
@@ -58,12 +53,20 @@ int main( int argc, char* argv[] ) {
   int x = 1;
   int y = 1;
 	while((ch = getch()) != KEY_F(1)) { // DO NOTHING
-    if( ch != KEY_BACKSPACE ) {
+    if( ch != KEY_BACKSPACE && ch != 10 ) {
+      /*
+         grab user input, key by key, and add it to
+         text_text[][]. print char (advancing cursor)
+         refresh, increment pointer (y)
+       */
       text_text[x][y] = ch;
       mvwaddch(text_win, x, y, text_text[x][y]);
       wrefresh(text_win);
       y += 1;
-    } else {
+    } else if( ch == KEY_BACKSPACE ) {
+      /*
+         backspace key handler
+       */
       if( y != 1 ) {
         y -= 1; 
         text_text[x][y] = ' ';
@@ -71,6 +74,20 @@ int main( int argc, char* argv[] ) {
         wmove(text_win, x, y);
         wrefresh(text_win);
       }
+    } else if( ch == 10 ) {
+      /*
+         push data to queue to be processed
+          grab all characters out of text_text and
+          push them into the queue, empty text_text
+      */ 
+      /*for( int i = 0; i < text_win_x; i++ )
+        for( int j = 0; j < text_win_y; j++ )
+          mvwdelch(text_win, i, j);*/
+      werase(text_win);
+      box(text_win, 0, 0);
+      wmove(text_win, 1, 1);
+      x = 1; y = 1;
+      wrefresh(text_win);
     }
 	}
 
