@@ -2,10 +2,20 @@
 #include <iostream>
 #include <string.h>
 
+#define chat_win_x 39
+#define chat_win_y 120
+#define text_win_x 9
+#define text_win_y 120
+#define user_win_x 48
+#define user_win_y 26
+
 WINDOW	*create_newwin( int height, int width, int starty, int startx);
 void		destroy_win( WINDOW *local_win );
 
 int main( int argc, char* argv[] ) {
+  /*if( argv[1] != NULL )
+    char *username[15] = { argv[1] };*/
+
 	WINDOW *global_win;
 	WINDOW *chat_win;
 	WINDOW *text_win;
@@ -15,6 +25,7 @@ int main( int argc, char* argv[] ) {
 
 	initscr();
 	cbreak();
+  noecho();
 
 	keypad( stdscr, TRUE );
 
@@ -27,6 +38,7 @@ int main( int argc, char* argv[] ) {
 	user_win		= create_newwin( 48, 26, 1, 122 );
 
 	char chat_text[39][120];
+  char text_text[9][120];
 	for( int i = 0; i < 39; i++ )
 		for( int j = 0; j < 120; j++ )
 			chat_text[i][j] = 'a';
@@ -37,30 +49,43 @@ int main( int argc, char* argv[] ) {
     for( int j = 5; j < 30; j++ )
       mvwaddch(chat_win,i,j,chat_text[i][j]);
   wrefresh(chat_win);
-//  refresh();
 
-/*	const char *x = "blah blah blah";
+  /*for( int i = 0; *username[i] != '\0'; i++ ) {
+    mvwaddch(user_win, 1, i, *username[i]);
+  }
+  wrefresh(user_win);*/
 
-	for( int i = 0; i < 14; i++ ) {
-		chat_text[0][i] = x[i];
-	}
-
-	for( int i = 0; i < 14; i++ ) {
-		mvwaddch( chat_win, 0, i, chat_text[0][i] );
-	}
-*/
-//	mvwaddch(chat_win, 2, 2, "blah blah blah");
-	//printw("blah blah blah");
-	//move(2,123);
-	//printw("droops");
-//	refresh();
-
+  int x = 1;
+  int y = 1;
 	while((ch = getch()) != KEY_F(1)) { // DO NOTHING
-		
+    if( ch != KEY_BACKSPACE ) {
+      text_text[x][y] = ch;
+      mvwaddch(text_win, x, y, text_text[x][y]);
+      wrefresh(text_win);
+      y += 1;
+    } else {
+      if( y != 1 ) {
+        y -= 1; 
+        text_text[x][y] = ' ';
+        mvwaddch(text_win, x, y, text_text[x][y]);
+        wmove(text_win, x, y);
+        wrefresh(text_win);
+      }
+    }
 	}
 
 	endwin();
 	return 0;
+}
+
+void *monitor_chat() {
+  // wait for response back from server
+}
+
+void *monitor_input( void *input_win ) {
+  // watch for user input
+  // wait for '\n'
+  // send data to queue
 }
 
 WINDOW *create_newwin( int height, int width, int starty, int startx ) {
