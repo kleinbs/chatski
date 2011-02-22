@@ -30,15 +30,18 @@ int main(int argc, char *argv[])
 memset(&echoServAddr, 0, sizeof(echoServAddr));
 echoServAddr.sin_family = AF_INET;
 echoServAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-echoServAddr.sin_port = htons(echoServPort);
+echoServAddr.sin_port = htons(SERVERPORT);
 
-if(bind(servSock, (struct sockaddr *), &echoServAddr, sizeOf(echoServAddr)) < 0)
+if(bind(servSock, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0)
 	DieWithError("bind() failed");
 
+if(listen(servSock, MAXPENDING) < 0)
+{
+	DieWithError("listen() failed");
+}
  for(;;)
  {
-  if(listen(servSock, MAXPENDING) < 0)
-	DieWithError("listen() failed");
+   
  }
 
 }	
