@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 #define MAXPENDING 5;
-#define SERVERPORT 90;
 
 void DieWithError(char *errorMessage);
 
@@ -16,7 +15,7 @@ int sockArr[10];
 
 int main(int argc, char *argv[])
 {
-
+ int SERVERPORT = 90;
  int servSock;
  int clntSock;
  struct sockaddr_in echoServAddr;
