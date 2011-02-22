@@ -8,11 +8,17 @@
 #include <unistd.h>
 
 #define MAXPENDING 5;
+#define SERVSOCK 90;
 
 void DieWithError(char *errorMessage);
 
+int sockArr[10];
+
 int main(int argc, char *argv[])
 {
-	int servSock;
-	int clientSock;
+ for(;;)
+ {
+  if(listen(SERVSOCK, MAXPENDING) < 0)
+	dieWithError("listen() failed");
+ }	
 }
