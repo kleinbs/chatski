@@ -8,6 +8,7 @@
 #define MAXPENDING 5
 
 void DieWithError( char *errorMessage );
+void comm( int sockfd );
 //void HandleTCPClient( int clntSocket);
 
 int main( int argc, char *argv[] ) {
@@ -18,7 +19,7 @@ int main( int argc, char *argv[] ) {
 	struct sockaddr_in echoClntAddr;
 	unsigned short echoServPort = 99;
 	unsigned int clntLen;
-
+	printf("I am running!!\n");
 	/* Create socket for incoming connections */
 	if( ( servSock = socket( PF_INET, SOCK_STREAM, IPPROTO_TCP ) ) < 0 )
 		DieWithError( "socket() failed" );
@@ -40,7 +41,7 @@ int main( int argc, char *argv[] ) {
 	for( ;; ) {
 		/* Set the size of the in-out parameter */
 		clntLen = sizeof( echoClntAddr );
-
+		
 		/* Wait for a client to connect */
 		if( ( clntSock = accept( servSock, ( struct sockaddr * ) &echoClntAddr, &clntLen ) ) < 0 )
 			DieWithError( "accept() failed" );
@@ -52,6 +53,7 @@ int main( int argc, char *argv[] ) {
 		  DieWithError("fork() failed");
 		else if (pid == 0)
 		{
+		  comm(clntSock);
 		  close(servSock);
 		  exit(0);
 		}
