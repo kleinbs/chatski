@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #define MAXPENDING 5
 
@@ -19,6 +20,9 @@ int main( int argc, char *argv[] ) {
 	struct sockaddr_in echoClntAddr;
 	unsigned short echoServPort = 99;
 	unsigned int clntLen;
+	pthread_t thread;
+	int  iret;
+	
 	printf("I am running!!\n");
 	/* Create socket for incoming connections */
 	if( ( servSock = socket( PF_INET, SOCK_STREAM, IPPROTO_TCP ) ) < 0 )
@@ -45,20 +49,13 @@ int main( int argc, char *argv[] ) {
 		/* Wait for a client to connect */
 		if( ( clntSock = accept( servSock, ( struct sockaddr * ) &echoClntAddr, &clntLen ) ) < 0 )
 			DieWithError( "accept() failed" );
-
+		
 		/* clntSock is connected to a client */
 		printf( "Handling client %s\n", inet_ntoa( echoClntAddr.sin_addr ) );
-
-		if((pid = fork()) < 0)
-		  DieWithError("fork() failed");
-		else if (pid == 0)
-		{
-		  comm(clntSock);
-		  close(servSock);
-		  exit(0);
-		}
-		else
-		  close(clntSock);
+		
+		iret = pthread_create( &thread, NULL, comm, (void*) clntSock);
+		
+		//close(clntSock);
 		
 	}
 	/* NOT REACHED */
