@@ -12,16 +12,19 @@ void DieWithError( char *errorMessage );
 void comm( int sockfd );
 //void HandleTCPClient( int clntSocket);
 
+int threads[50];
+
 int main( int argc, char *argv[] ) {
 	int servSock;
 	int clntSock;
 	int pid;
+	int count = 0;
 	struct sockaddr_in echoServAddr;
 	struct sockaddr_in echoClntAddr;
 	unsigned short echoServPort = 99;
 	unsigned int clntLen;
 	pthread_t thread;
-	int  iret;
+	int  iret, msgHandler;
 	
 	printf("I am running!!\n");
 	/* Create socket for incoming connections */
@@ -54,7 +57,8 @@ int main( int argc, char *argv[] ) {
 		printf( "Handling client %s\n", inet_ntoa( echoClntAddr.sin_addr ) );
 		
 		iret = pthread_create( &thread, NULL, comm, (void*) clntSock);
-		
+		threads[count] = iret;
+		count++;
 		//close(clntSock);
 		
 	}

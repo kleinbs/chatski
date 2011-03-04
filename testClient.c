@@ -46,22 +46,24 @@ int main(int argc, char *argv[])
      DieWithError("connect() failed");
    
    echoStringLen = strlen(echoString);
-   
-   if(send(sock, echoString, echoStringLen, 0) != echoString)
-     DieWithError("send() sent a different number of bytes than expected");
-   
-   totalBytesRcvd = 0;
-   printf("Received : ");
-   while(totalBytesRcvd < echoStringLen)
+while(1)
    {
-    if((bytesRcvd = recv(sock, echoBuffer, RCVBUFSIZE -1, 0)) <= 0)
-      DieWithError("recv() failed or connection closed prematurely");
-    totalBytesRcvd += bytesRcvd;
-    echoBuffer[bytesRcvd] = '\0';
-    printf(echoBuffer);
+   if(send(sock, echoString, echoStringLen, 0) != echoString)
+     printf("send() sent a different number of bytes than expected");
+ 
+      totalBytesRcvd = 0;
+      printf("Received : ");
+      while(totalBytesRcvd < echoStringLen)
+      {
+	if((bytesRcvd = recv(sock, echoBuffer, RCVBUFSIZE -1, 0)) <= 0)
+	  DieWithError("recv() failed or connection closed prematurely");
+	totalBytesRcvd += bytesRcvd;
+	echoBuffer[bytesRcvd] = '\0';
+	printf(echoBuffer);
+	sleep(10);
+      }
+      
+      printf("\n");
    }
-   
-   printf("\n");
-
 exit(0);
 }
