@@ -7,23 +7,28 @@
 
 void DieWithError( char *errorMessage );
 
-void comm(void* p) {
+void comm(void* threadArgs) {
   
-   int n, nbytes;;
+   int n, nbytes;
    char buffer[256];
    bzero(buffer,256);
    
-   struct sock_pipe foo = *((struct sock_pipe*)(p)); 
+   struct sock_pipe *foo;
+   foo = (struct sock_pipe *) threadArgs;
    
-   printf("establishing connection on socket %d\n", foo.sock);
+   int listenPipe = foo->listenPipe;
+   int talkPipe = foo->talkPipe;
+   int sock = foo->sock;
+   
+   printf("establishing connection on socket %d\n", sock);
     
    while(1)
     {
      n = read(foo.sock,buffer,255);
      if (n < 0) 
        printf("ERROR reading from socket");
-     write(foo.talkPipe, foo.sock, sizeof(buffer));
-     nbytes = read(foo.listenPipe, buffer, sizeof(buffer));
+     write(talkPipe, sock, sizeof(buffer));
+     nbytes = read(listenPipe, buffer, sizeof(buffer));
      printf("Here is the message on socket %d: %s\n", buffer, foo.sock);
      n = write(nbytes,"I got your message",18);
      if (n < 0) 

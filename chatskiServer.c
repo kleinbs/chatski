@@ -11,7 +11,8 @@
 
 
 void DieWithError( char *errorMessage );
-void comm( int sockfd );
+void comm( void* p );
+void talk( void* p);
 //void HandleTCPClient( int clntSocket);
 
 int threads[50];
